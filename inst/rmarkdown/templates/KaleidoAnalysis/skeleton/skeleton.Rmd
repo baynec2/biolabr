@@ -1,0 +1,33 @@
+---
+title: "G875_Analysis"
+author: "Charlie Bayne"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+        theme: cosmo
+        toc: true
+        toc_depth: 6
+        toc_float:
+            collapsed: true
+            smooth_scroll: true
+        code_folding: hide
+        highlight: tango
+        df_print: paged
+---
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src=\"Kaleido_Logo.jpg\" style=\"float: right;width: 250px;\"/>')
+   });
+</script>
+
+
+# Goal 
+
+# Methods 
+
+# Analysis  
+
+# Conclusions   
+
+**Next Steps**

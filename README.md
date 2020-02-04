@@ -17,4 +17,6 @@ their own.
 
 ## Installation
 
+## Functions
+
 ## Example
