@@ -1,9 +1,44 @@
+#' Genewiz_16S
+#'
+#' This function is designed to be a consise method to determine the taxonomy of several samples that have been sent for 16S sanger sequnecing.
+#'
+#' The function does this by generating consensus sequences from a folder containing several forward and reverse 16S sanger sequencing reads and then BLASTs them against the NCBI database.
+#' This folder containing the foward and reverse reads is intended to be obtained through Genewiz 16S although it doesn't necessarily have to have been for the function to work.
+#' The files must have the following naming conventions though.
+#'
+#' In the folder containing all of the data, the forward read for any given sample name should be followed by SeqF.ab1. ex "Sample1SeqF.ab1"
+#'
+#' The reverse read for the same sample should be the same sample name followed by SeqR.ab1. ex "Sample1SeqR.ab1"
+#'
+#' This function is designed to handle any number of paired forward and reverse samples in the inital input folder.
+#'
+#' This function also depends on the user having installed blast on their computer. This can be done by going to ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
+#' The user will then have to download the 16SMicrobial database. This can be downloaded at ftp://ftp.ncbi.nlm.nih.gov/blast/db/v4/
+#'
+#' Once blastn is downloaded the user will then need to provide a database that converts the NCBI acession number to the actual taxonomy.
+#' This can be done by using the prepareDatabase('accessionTaxa.sql') function that is part of the taxonomizer package (https://github.com/sherrillmix/taxonomizr).
+#' Note that it is best to store the acessionTaxa database somewhere central because it is quite large (~60 GB).
+#'
+
+#'
+#' @param folder_path This is the path to the folder containing the forward and reverse 16S reads.
+#' @param blast_db_path This is the path to the 16SMicrobial database
+#' @param accessionToTaxa_path This is the path to the accessionTaxa.sql database.
+#' @param similarity This is the similarity cutoff to consider (entered as a percentage). If multiple taxa are reported to have the given level of similarity,
+#' the most granular level of taxonomy where there is consensus will be returned.
+#'
+#' @return a dataframe containing the taxonomy assignmets corresponding with the samples in the folder path.
+#' @export
+#'
+#' @examples
+#' taxa = Genewiz_16S("Folder_with_Genewiz_Results",
+#' blast_db_path = "where_I_store_the_16SMicrobial_database",
+#' accessionToTaxa_path = "where_I_store the acessionTaxa.sql_file_I_got_by_using_taxonomizer_package"
+#' similarity = 99)
 Genewiz_16S = function(folder_path,
                       blast_db_path = file.path("/Volumes/kaleidobio/Shared/D2/Departments/Research/Biology/biolabr/16SMicrobial/16SMicrobial"),
                       accessionToTaxa_path = file.path("/Volumes/kaleidobio/Shared/D2/Departments/Research/Biology/biolabr/accessionTaxa.sql"),
                       similarity = 99) {
-
-    folder_path = "/Volumes/kaleidobio/Shared/D2/Projects/Immunoncology (IO)/Discovery/Experiments/01_Akkermansia/01_Isolating_Akkermansia_G878/Genewiz_16S/"
     #Loading the DNA sequences from the genewiz files and making consensus sequences.
     p1 = sangeranalyseR::make.consensus.seqs(folder_path,
                                              forward.suffix = "SeqF.ab1",

@@ -12,6 +12,7 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
             }
 
         Data = output[,1:15]
+        names(Data) = paste0("...",1:15)
 
         #Getting an Index to use as a reference. Here we will be using the Well containing the text Plate Number.
         Index = which(str_detect(Data$...1,"Plate Number"))
