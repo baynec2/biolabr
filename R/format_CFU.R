@@ -1,4 +1,17 @@
-format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
+#' format_CFU
+#' This function is used to parse an excel template containing colony counts and metadata corresponding to CFU spots on agar plates and assign the appropriate sample.IDs.
+#' Note that this function assumes that 2uL is plated for each spot.
+#'
+#' @param Filepath = The file path to the filled out excel template containing the colony counts and metadata . This must be the specific excel template designed for use with this function
+#' @param Dilution_orientation = Specify whether the dilution is oriented row wise or plate wise.
+#'
+#' @return = a data frame with the calculated CFU/mL for each Sample.ID
+#' @export
+#'
+#' @examples
+#' df = format_CFU(Filepath = "/filepath",Dilution_orientation = "Row")
+#'
+format_CFU = function(Filepath,Dilution_orientation = "Row"){
 
 #Code for formating if the dilutions are arranged Row wise.
     if(Dilution_orientation == "Row"){
@@ -15,7 +28,7 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
         names(Data) = paste0("...",1:15)
 
         #Getting an Index to use as a reference. Here we will be using the Well containing the text Plate Number.
-        Index = which(str_detect(Data$...1,"Plate Number"))
+        Index = which(stringr::str_detect(Data$...1,"Plate Number"))
 
         output_vector = vector()
             for(i in Index) {
@@ -29,7 +42,7 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
         #Assigning the Appropriate Well_IDs
         Well_ID = vector()
         Columns = rep(1:12,each =8)
-        Row_Index = which(str_detect(Data$...4,"Row"))
+        Row_Index = which(stringr::str_detect(Data$...4,"Row"))
         rows_vector = vector()
 
             for(i in Row_Index) {
@@ -43,7 +56,7 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
 
         #Extracting the corresponding Dilutions
         Dilution_vector = vector()
-        Dilution_Index = which(str_detect(Data$...2,"Dilution"))
+        Dilution_Index = which(stringr::str_detect(Data$...2,"Dilution"))
             for(i in Dilution_Index) {
                 Dilution = Data[(i+1):(i+8),2]
                 Dilution_temp = rep(gsub("Dilution ","",x = Dilution),12)
@@ -60,7 +73,7 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
             }
 
         #Extracting the corresponding Media
-        Media_Index = which(str_detect(Data$...2,"Media Type"))
+        Media_Index = which(stringr::str_detect(Data$...2,"Media Type"))
         Media_vector = vector()
             for(i in Media_Index) {
                 Media = Data[(i+1),2]
@@ -69,7 +82,7 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
             }
 
         #Extracting the Incubating Condition
-        Condition_Index = which(str_detect(Data$...3,"Condition"))
+        Condition_Index = which(stringr::str_detect(Data$...3,"Condition"))
         Condition_vector = vector()
             for(i in Condition_Index) {
                 Condition = Data[(i+1),3]
@@ -78,7 +91,7 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
             }
 
         #Extracting the length of incubation
-        Length_Index = which(str_detect(Data$...5,"Length of incubation"))
+        Length_Index = which(stringr::str_detect(Data$...5,"Length of incubation"))
         Length_vector = vector()
             for(i in Length_Index) {
                 Length = Data[(i+1),5]
@@ -90,7 +103,6 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
 
         names(Data_frame) = c("PlateNumber","Dilution","Media"," Condition","Length_of_Incubation","Well","Colony_Count")
 
-        Data_frame$Study = Study
 
         #Changing Class from factor to integer
         Data_frame$Dilution = as.integer(as.character(Data_frame$Dilution))
@@ -101,11 +113,13 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
 
 
         #Calculating CFUs/mL assuming that 2uL was plated.
-        Hand_Count = dplyr::mutate(Hand_Count, Sample_ID = paste0(Study,".p",PlateNumber,".",Well),
+        Hand_Count = dplyr::mutate(Hand_Count, Sample_ID = paste0(PlateNumber,".",Well),
                             Dilution_Factor = 10^Dilution,
                             CFU_mL = Colony_Count*Dilution_Factor*500)
 
-        Hand_Count = dplyr::select(Hand_Count, Sample_ID, Study, everything())
+        Hand_Count = dplyr::select(Hand_Count, Sample_ID, everything())
+
+        Hand_Count = dplyr::filter(Hand_Count,!is.na(CFU_mL))
 
     return(Hand_Count)
     }
@@ -122,7 +136,7 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
 
         Data = output[,1:14]
         names(Data) = paste0("..",1:14)
-        Index = which(str_detect(Data$..1,"Plate Number"))
+        Index = which(stringr::str_detect(Data$..1,"Plate Number"))
 
         output = data.frame()
             for(i in Index) {
@@ -185,7 +199,6 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
 
         names(Data_frame) = c("PlateNumber","Dilution","Media"," Condition","Length_of_Incubation","Well","Colony_Count")
 
-        Data_frame$Study = Study
 
         #Changing Class from factor to integer
         Data_frame$Dilution = as.integer(as.character(Data_frame$Dilution))
@@ -194,11 +207,13 @@ format_CFU = function(Filepath,Study,Dilution_orientation = "Row"){
         #Finalizing the Data Frame
         Hand_Count = Data_frame
 
-        Hand_Count = dplyr::mutate(Hand_Count, Sample_ID = paste0(Study,".p",PlateNumber,".",Well),
+        Hand_Count = dplyr::mutate(Hand_Count, Sample_ID = paste0(PlateNumber,".",Well),
                              Dilution_Factor = 10^Dilution,
                              CFU_mL = Colony_Count*Dilution_Factor*500)
 
-        Hand_Count = dplyr::select(Hand_Count, Sample_ID, Study, dplyr::everything())
+        Hand_Count = dplyr::select(Hand_Count, Sample_ID, dplyr::everything())
+
+        Hand_Count = dplyr::filter(Hand_Count,!is.na(CFU_mL))
 
         return(Hand_Count)
     }

@@ -1,5 +1,5 @@
 ---
-title: "G875_Analysis"
+title: "Untitled"
 author: "Charlie Bayne"
 date: "`r Sys.Date()`"
 output:
@@ -14,13 +14,17 @@ output:
         highlight: tango
         df_print: paged
 ---
-<script>
-   $(document).ready(function() {
-     $head = $('#header');
-     $head.prepend('<img src=\"Kaleido_Logo.jpg\" style=\"float: right;width: 250px;\"/>')
-   });
-</script>
+```{r setup, include=FALSE, warning= FALSE}
+library(tidyverse)
 
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE,message = FALSE)
+
+#Setting ggplot2 theme
+theme_set(
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5))
+  )
+```
 
 # Goal 
 
