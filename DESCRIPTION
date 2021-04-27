@@ -22,7 +22,7 @@ Depends:
     rBLAST (>= 0.99.2)
 biocViews:    
 Remotes: 
-    git::https://github.com/mhahsler/rBLAST
+    git::https://github.com/mhahsler/rBLAST,
     git::https://github.com/roblanf/sangeranalyseR
 Encoding: UTF-8
 LazyData: true
