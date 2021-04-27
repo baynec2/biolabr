@@ -4,7 +4,6 @@
 # biolabr
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 The goal of biolabr is to provide a consistent location to store and
@@ -299,7 +298,7 @@ DT::datatable(d1)
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
-## %nin%
+### %nin%
 
 This is an operator for negated value matching. I frequently find it
 useful to have an operator that is the opposite of %in%. This operator
@@ -312,5 +311,87 @@ test %nin% 2
 #>  [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
 ```
 
+### Dynamic Time Warping
+
+This package also contains functions designed to make it easy to do
+dynamic time warping in order to look through high dimensional datasets
+for features that match a given pattern of interest.
+
+Here in this example we will be looking at an untargeted metabalomic
+data set of a timeseries of unique IDs described as a m/z at a given
+retention time. The time series includes a measurement at 0, 4.00, 8.03,
+, and 39.44 hrs.
+
+First let’s generate a hypothetical pattern of interest and bind it to
+our data set
+
+``` r
+# Pattern of interest starts out high then rapidly decreases after ~4 hrs. 
+POI = data.frame(POI = c(100000,80000,1000,0,0,0))
+
+mb = readr::read_csv("example_files/Metabolomic_Time_Series.csv")
+#> Parsed with column specification:
+#> cols(
+#>   .default = col_double()
+#> )
+#> See spec(...) for full column specifications.
+
+all = cbind(mb,POI)
+```
+
+Now let’s apply the dynamic time warping algorithm to generate a
+distance matrix.
+
+``` r
+#Note that this function scales the data within each time series by default. 
+dist = biolabr::dtwarper(all)
+saveRDS(dist,"example_files/dist.rds")
+```
+
+``` r
+#reading from file to save time. 
+dist = readRDS("example_files/dist.rds")
+```
+
+Note that this function takes a while to run as dynamic time warping is
+somewhat computationally intense.
+
+Now we can pull out the 10 features that match this pattern the best.
+
+``` r
+n_IDs = find_n_similar(dist,"POI", n = 10)
+```
+
+Let’s plot these IDs so we can see what the trends look like.
+
+``` r
+library(ggplot2)
+
+# First need to convert the format back to long so we can plot these easily
+Time = tibble::tibble(Time = c(0,4,8.03,22.43,25.43,29.43))
+
+# Filtering to keep the 10 closest matches
+long = cbind(Time,all) %>% 
+  tidyr::pivot_longer(2:length(.)) %>% 
+  dplyr::filter(name %in% c(n_IDs,"POI"))
+
+# Plotting
+p1 = long %>% 
+  ggplot(aes(Time,value,color = name))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~name,scales = "free_y")+
+  theme(legend.position = "none")+
+  ggtitle("10 Most Similar Features to POI by Dynamic Time Warping")
+
+p1
+```
+
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+Here we can see that this seems to have worked fairly well! We are able
+to see trends that are pretty close to matching the POI that we entered.
+
+### RMD Template
+
 This package also contains a simple template that can be used for RMD
-analysis files.
+analysis files called Kaleido Analysis.
