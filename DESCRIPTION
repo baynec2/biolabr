@@ -23,7 +23,7 @@ Depends:
 biocViews:    
 Remotes: 
     git::https://github.com/mhahsler/rBLAST,
-    git::https://github.com/roblanf/sangeranalyseR
+    git::https://git.bioconductor.org/packages/sangeranalyseR
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
