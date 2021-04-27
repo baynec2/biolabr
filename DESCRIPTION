@@ -21,7 +21,9 @@ Depends:
     sangeranalyseR (>= 0.99.1),
     rBLAST (>= 0.99.2)
 biocViews:    
-Remotes: git::https://github.com/mhahsler/rBLAST
+Remotes: 
+    git::https://github.com/mhahsler/rBLAST
+    git::https://github.com/roblanf/sangeranalyseR
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
