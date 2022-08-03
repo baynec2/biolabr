@@ -159,7 +159,7 @@ This function assumes that samples have been loaded onto the gel using a multich
 ```{r}
 d1 = assign_gel_wells("example_files/Gel_Band_Data.xlsx")
 
-DT::datatable(d1)
+head(d1)
 ```
 
 ### %nin%
