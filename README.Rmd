@@ -1,5 +1,6 @@
 ---
 output: github_document
+always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -13,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# biolabr
+# biolabr <a href='https://github.com/baynec2/biolabr'><img src='man/hex-biolabr.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -64,7 +65,7 @@ library(biolabr)
 
 t1 = format_CFU("example_files/CFU_Dilutions_On_Different_Rows_Example.xlsx")
 
-DT::datatable(t1)
+head(t1)
 ```
 
 
@@ -104,7 +105,7 @@ Once all of these steps have been completed you should be able to run the functi
 
 Importantly, this function will return the lowest level of taxonomy that is completely unambiguous at your specified percent identity. This means if you specify a percent identity of 99%, and there are matches to Escherichia coli and Escherichia albertii, the function will only identify your taxa at the genus level (Escherichia).
 
-```{r}
+```{r,eval = FALSE}
 #Note that the file paths specified here are for my machine. Depending on how you set yours up the file paths will differ. 
 library(biolabr)
 taxonomy = Genewiz_16S(folder_path = "example_files/Genewiz_16S_Data/",
@@ -126,7 +127,7 @@ The original output files are in multiple sheets of an excel workbook, this func
 library(biolabr)
 df = parse_gas_data("example_files/Ankom_Gas_Data.xls")
 
-DT::datatable(df)
+head(df)
 ```
 
 
